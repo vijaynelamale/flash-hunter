@@ -97,3 +97,38 @@ targets:
         - "https://www.amazon.in/s?k=mechanical+keyboard"
       flipkart:
         - "https://www.flipkart.com/computers/computer-peripherals/keyboards/pr?sid=6bo,ai3,or9"
+
+  - id: "pc_components"
+    name: "PC Components (GPU, CPU, NVMe SSD, DDR4/DDR5 RAM, Motherboard)"
+    natural_language_spec: "Genuine internal PC computer hardware components including: NVMe M.2 SSDs (>=1TB PCIe Gen4/Gen3), DDR4/DDR5 RAM kits (>=16GB/32GB), dedicated Graphics Cards (NVIDIA RTX or AMD Radeon), Desktop CPUs (Intel Core i5/i7/i9 or AMD Ryzen 5/7/9), or 80+ Gold/Bronze Power Supplies from reputed brands (Crucial, Samsung, Western Digital, Kingston, Corsair, G.Skill, ASUS, MSI, Gigabyte, Intel, AMD)."
+    max_price_inr: 15000.0
+    min_discount_percent: 35.0
+    negative_keywords:
+      - "thermal paste"
+      - "thermal pad"
+      - "screws"
+      - "sata cable"
+      - "fan splitter"
+      - "rgb strip"
+      - "mounting bracket"
+      - "riser cable"
+      - "extension cable"
+      - "cooler bracket"
+      - "dummy"
+      - "heatsink only"
+      - "enclosure only"
+      - "case only"
+      - "empty box"
+      - "refurbished"
+      - "renewed"
+    category_poll_urls:
+      amazon:
+        - "https://www.amazon.in/s?k=nvme+ssd+1tb&rh=p_n_deal_type%3A26922981031"
+        - "https://www.amazon.in/s?k=graphics+card&rh=p_n_deal_type%3A26922981031"
+        - "https://www.amazon.in/s?k=ddr5+ram+16gb&rh=p_n_deal_type%3A26922981031"
+        - "https://www.amazon.in/s?k=ryzen+processor&rh=p_n_deal_type%3A26922981031"
+      flipkart:
+        - "https://www.flipkart.com/computers/computer-components/storage/internal-hard-drives/pr?sid=6bo,g0i,qql"
+        - "https://www.flipkart.com/computers/computer-components/graphic-cards/pr?sid=6bo,g0i,fn3"
+        - "https://www.flipkart.com/computers/computer-components/rams/pr?sid=6bo,g0i,jh3"
+        - "https://www.flipkart.com/computers/computer-components/processors/pr?sid=6bo,g0i,tz1"
