@@ -2,9 +2,15 @@
 
 import asyncio
 import logging
+from pathlib import Path
 import signal
 import sys
 from typing import Optional
+
+# Ensure project root is in sys.path when running script directly
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 # Check uvloop for high performance async loop
 try:
@@ -24,6 +30,7 @@ from src.ingestion.category_poller import CategoryPoller
 from src.ingestion.telegram_stream import TelegramDealStream
 from src.intelligence.llm_validator import LLMDealValidator
 from src.notifier.telegram_bot import TelegramControlNotifier
+from src.safety.circuit_breaker import CircuitBreaker
 from src.scraper.product_fetcher import ProductFetcher
 from src.transport.http_client import ResilientHttpClient
 
