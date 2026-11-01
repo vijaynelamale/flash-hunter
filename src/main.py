@@ -82,6 +82,7 @@ class FlashHunterOrchestrator:
             api_hash=self.settings.TELEGRAM_API_HASH,
             channels=self.settings.get_telegram_channels_list(),
             deal_queue=self.deal_queue,
+            bot_token=self.settings.TELEGRAM_BOT_TOKEN,
             http_client=self.http_client,
         )
         self.category_poller = CategoryPoller(

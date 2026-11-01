@@ -53,12 +53,14 @@ class TelegramDealStream:
         api_hash: Optional[str],
         channels: List[str],
         deal_queue: asyncio.Queue,
+        bot_token: Optional[str] = None,
         http_client=None,
     ):
         self.api_id = api_id
         self.api_hash = api_hash
         self.channels = channels
         self.deal_queue = deal_queue
+        self.bot_token = bot_token
         self.http_client = http_client
         self.client = None
         self._is_running = False
@@ -72,7 +74,10 @@ class TelegramDealStream:
         try:
             from telethon import TelegramClient, events
             self.client = TelegramClient("flash_hunter_session", self.api_id, self.api_hash)
-            await self.client.start()
+            if self.bot_token:
+                await self.client.start(bot_token=self.bot_token)
+            else:
+                await self.client.start()
             self._is_running = True
             logger.info("Connected to Telegram deal stream. Monitoring %d channels.", len(self.channels))
 
