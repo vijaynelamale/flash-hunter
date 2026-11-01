@@ -5,7 +5,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -95,6 +95,23 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
     LLM_CONFIDENCE_THRESHOLD: float = 0.85
+
+    @field_validator(
+        "TELEGRAM_BOT_TOKEN",
+        "TELEGRAM_CHAT_ID",
+        "TELEGRAM_API_ID",
+        "TELEGRAM_API_HASH",
+        "GEMINI_API_KEY",
+        "GROQ_API_KEY",
+        "WEBHOOK_URL",
+        "WEBHOOK_SECRET",
+        mode="before",
+    )
+    @classmethod
+    def empty_str_to_none(cls, v: Any) -> Any:
+        if isinstance(v, str) and not v.strip():
+            return None
+        return v
 
     def get_telegram_channels_list(self) -> List[str]:
         return [c.strip() for c in self.TELEGRAM_CHANNELS.split(",") if c.strip()]
