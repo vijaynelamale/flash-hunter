@@ -5,7 +5,7 @@
 global_rules:
   crazy_deal_override:
     enabled: true
-    min_discount_percent: 90.0
+    min_discount_percent: 99.0
     max_price_inr: 1000.0
     description: "Instant trigger on any legitimate high-discount loot across all monitored streams regardless of category"
 
@@ -13,8 +13,8 @@ targets:
   - id: "flagship_smartphone"
     name: "Flagship / Upper Mid-Range Smartphone"
     natural_language_spec: "Genuine smartphone with at least 8GB RAM and 128GB/256GB storage, modern 5G processor (Snapdragon or Dimensity), AMOLED display, high brand reputation (OnePlus, Samsung, Xiaomi/Poco, iQOO, Apple, Google Pixel, Motorola)."
-    max_price_inr: 25000.0
-    min_discount_percent: 30.0
+    max_price_inr: 10000.0
+    min_discount_percent: 80.0
     negative_keywords:
       - "cover"
       - "case"
@@ -40,7 +40,7 @@ targets:
   - id: "tws_anc_earbuds"
     name: "TWS Earbuds with Active Noise Cancellation"
     natural_language_spec: "True Wireless Stereo (TWS) earbuds featuring genuine Active Noise Cancellation (ANC), LDAC/AAC codec support, and at least 24h battery life from reputed audio brands (Sony, OnePlus, Nothing, Realme, JBL, Samsung Galaxy Buds)."
-    max_price_inr: 4500.0
+    max_price_inr: 500.0
     min_discount_percent: 50.0
     negative_keywords:
       - "silicone case"
@@ -52,6 +52,7 @@ targets:
       - "replacement bud"
       - "cable"
       - "ear hook"
+      - "generic brand"
     category_poll_urls:
       amazon:
         - "https://www.amazon.in/s?k=tws+anc+earbuds&rh=p_n_deal_type%3A26922981031"
@@ -61,7 +62,7 @@ targets:
   - id: "smartwatch_amoled"
     name: "AMOLED Smartwatch"
     natural_language_spec: "Smartwatch with AMOLED display, Bluetooth calling, heart rate & SpO2 sensors, IP68 water resistance from brands like Amazfit, OnePlus, Noise, Fire-Boltt, or Samsung."
-    max_price_inr: 2500.0
+    max_price_inr: 500.0
     min_discount_percent: 60.0
     negative_keywords:
       - "strap"
@@ -81,8 +82,8 @@ targets:
   - id: "mechanical_keyboard"
     name: "Mechanical Gaming Keyboard"
     natural_language_spec: "Hot-swappable or genuine mechanical switch keyboard (Red/Brown/Blue switches), RGB or white backlighting, Tenkeyless (TKL) or 75% or full-size layout from Keychron, Royal Kludge, Cosmic Byte, Redragon, Razer, Logitech."
-    max_price_inr: 3000.0
-    min_discount_percent: 45.0
+    max_price_inr: 1000.0
+    min_discount_percent: 50.0
     negative_keywords:
       - "keycaps"
       - "wrist rest"
@@ -101,8 +102,8 @@ targets:
   - id: "pc_components"
     name: "PC Components (GPU, CPU, NVMe SSD, DDR4/DDR5 RAM, Motherboard)"
     natural_language_spec: "Genuine internal PC computer hardware components including: NVMe M.2 SSDs (>=1TB PCIe Gen4/Gen3), DDR4/DDR5 RAM kits (>=16GB/32GB), dedicated Graphics Cards (NVIDIA RTX or AMD Radeon), Desktop CPUs (Intel Core i5/i7/i9 or AMD Ryzen 5/7/9), or 80+ Gold/Bronze Power Supplies from reputed brands (Crucial, Samsung, Western Digital, Kingston, Corsair, G.Skill, ASUS, MSI, Gigabyte, Intel, AMD)."
-    max_price_inr: 15000.0
-    min_discount_percent: 35.0
+    max_price_inr: 1000.0
+    min_discount_percent: 85.0
     negative_keywords:
       - "thermal paste"
       - "thermal pad"
@@ -137,7 +138,7 @@ targets:
     name: "Large Home Appliances (Washing Machine, Refrigerator, AC, Microwave, Smart TV)"
     natural_language_spec: "Genuine full-sized large major home appliances: Fully/Semi-Automatic Washing Machines (Front/Top Load), Frost-Free Single/Double Door Refrigerators, Split/Window Inverter Air Conditioners (1T/1.5T), Convection/Grill Microwave Ovens (>=20L), Dishwashers, or Smart LED/QLED Televisions (>=32 inch) from top manufacturers (LG, Samsung, Whirlpool, Bosch, IFB, Panasonic, Haier, Godrej, Voltas, Daikin, Sony, Mi)."
     max_price_inr: 5000.0
-    min_discount_percent: 60.0
+    min_discount_percent: 80.0
     negative_keywords:
       - "cover"
       - "dust cover"
