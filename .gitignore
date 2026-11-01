@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Runtime Databases, Logs & Sessions
+*.db
+*.db-wal
+*.db-shm
+data/*.db
+data/*.db-wal
+data/*.db-shm
+logs/
+*.log
+*.session
+*.session-journal
+
+# Environment Secrets
+.env
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/

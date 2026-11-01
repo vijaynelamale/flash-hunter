@@ -1,0 +1,28 @@
+# Core Runtime & Async Framework
+pydantic>=2.7.0
+pydantic-settings>=2.2.0
+pyyaml>=6.0.1
+aiosqlite>=0.20.0
+
+# HTTP & WAF Bypass Transport (with httpx fallback)
+curl_cffi>=0.7.0
+httpx[http2]>=0.27.0
+
+# HTML Parsing (selectolax primary, bs4/lxml fallback)
+selectolax>=0.3.21
+beautifulsoup4>=4.12.3
+lxml>=5.2.0
+
+# Stream Ingestion & Telecommunications
+telethon>=1.36.0
+
+# Cloud LLM Verification
+google-genai>=0.1.1
+
+# Android Automation (uiautomator2)
+uiautomator2>=3.2.0
+
+# Testing & Dev Fixtures
+pytest>=8.2.0
+pytest-asyncio>=0.23.6
+pytest-mock>=3.14.0

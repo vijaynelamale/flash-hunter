@@ -1,0 +1,99 @@
+# ==============================================================================
+# Flash-Hunter Target Categories & Deal Expectations
+# ==============================================================================
+
+global_rules:
+  crazy_deal_override:
+    enabled: true
+    min_discount_percent: 90.0
+    max_price_inr: 1000.0
+    description: "Instant trigger on any legitimate high-discount loot across all monitored streams regardless of category"
+
+targets:
+  - id: "flagship_smartphone"
+    name: "Flagship / Upper Mid-Range Smartphone"
+    natural_language_spec: "Genuine smartphone with at least 8GB RAM and 128GB/256GB storage, modern 5G processor (Snapdragon or Dimensity), AMOLED display, high brand reputation (OnePlus, Samsung, Xiaomi/Poco, iQOO, Apple, Google Pixel, Motorola)."
+    max_price_inr: 25000.0
+    min_discount_percent: 30.0
+    negative_keywords:
+      - "cover"
+      - "case"
+      - "screen protector"
+      - "tempered glass"
+      - "skin"
+      - "camera lens protector"
+      - "refurbished"
+      - "renewed"
+      - "dummy"
+      - "box only"
+      - "cable"
+      - "adapter"
+      - "spare part"
+    category_poll_urls:
+      amazon:
+        - "https://www.amazon.in/gp/goldbox?ref_=nav_cs_gb"
+        - "https://www.amazon.in/s?k=smartphone&rh=p_n_deal_type%3A26922981031"
+      flipkart:
+        - "https://www.flipkart.com/offers-store"
+        - "https://www.flipkart.com/mobiles/pr?sid=tyy,4io&p[]=facets.discount_range_v1%255B%255D%3D30%2525%2Bor%2Bmore"
+
+  - id: "tws_anc_earbuds"
+    name: "TWS Earbuds with Active Noise Cancellation"
+    natural_language_spec: "True Wireless Stereo (TWS) earbuds featuring genuine Active Noise Cancellation (ANC), LDAC/AAC codec support, and at least 24h battery life from reputed audio brands (Sony, OnePlus, Nothing, Realme, JBL, Samsung Galaxy Buds)."
+    max_price_inr: 4500.0
+    min_discount_percent: 50.0
+    negative_keywords:
+      - "silicone case"
+      - "ear tips"
+      - "strap"
+      - "case cover"
+      - "cleaning kit"
+      - "refurbished"
+      - "replacement bud"
+      - "cable"
+      - "ear hook"
+    category_poll_urls:
+      amazon:
+        - "https://www.amazon.in/s?k=tws+anc+earbuds&rh=p_n_deal_type%3A26922981031"
+      flipkart:
+        - "https://www.flipkart.com/audio-video/headphones/pr?sid=0pm,fcn&p[]=facets.type%255B%255D%3DTrue%2BWireless"
+
+  - id: "smartwatch_amoled"
+    name: "AMOLED Smartwatch"
+    natural_language_spec: "Smartwatch with AMOLED display, Bluetooth calling, heart rate & SpO2 sensors, IP68 water resistance from brands like Amazfit, OnePlus, Noise, Fire-Boltt, or Samsung."
+    max_price_inr: 2500.0
+    min_discount_percent: 60.0
+    negative_keywords:
+      - "strap"
+      - "band"
+      - "screen guard"
+      - "protective bumper"
+      - "charging dock"
+      - "cable"
+      - "bezel ring"
+      - "refurbished"
+    category_poll_urls:
+      amazon:
+        - "https://www.amazon.in/s?k=smartwatch+amoled"
+      flipkart:
+        - "https://www.flipkart.com/wearable-smart-devices/smart-watches/pr?sid=ajy,buh"
+
+  - id: "mechanical_keyboard"
+    name: "Mechanical Gaming Keyboard"
+    natural_language_spec: "Hot-swappable or genuine mechanical switch keyboard (Red/Brown/Blue switches), RGB or white backlighting, Tenkeyless (TKL) or 75% or full-size layout from Keychron, Royal Kludge, Cosmic Byte, Redragon, Razer, Logitech."
+    max_price_inr: 3000.0
+    min_discount_percent: 45.0
+    negative_keywords:
+      - "keycaps"
+      - "wrist rest"
+      - "switch puller"
+      - "lube"
+      - "switches only"
+      - "desk mat"
+      - "dust cover"
+      - "membrane"
+    category_poll_urls:
+      amazon:
+        - "https://www.amazon.in/s?k=mechanical+keyboard"
+      flipkart:
+        - "https://www.flipkart.com/computers/computer-peripherals/keyboards/pr?sid=6bo,ai3,or9"
