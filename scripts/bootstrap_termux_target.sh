@@ -20,8 +20,16 @@ fi
 echo "[+] Updating pkg repositories..."
 pkg update -y && pkg upgrade -y
 
-echo "[+] Installing core build tools and dependencies..."
-pkg install -y python git rust clang binutils libxml2 libxslt libffi openssl sqlite android-tools
+# Detect Android API level and export for Rust/maturin builds
+export ANDROID_API_LEVEL="${ANDROID_API_LEVEL:-24}"
+export CARGO_BUILD_TARGET_DIR="${PROJECT_DIR:-$HOME/flash-hunter}/.cargo_target"
+
+echo "[+] Installing core build tools and pre-compiled Termux Python wheels..."
+pkg install -y python python-pip git rust clang binutils libxml2 libxslt libffi openssl sqlite android-tools make pkg-config \
+    python-pydantic python-pydantic-core python-pydantic-settings python-cryptography python-lxml python-pillow python-yaml python-httpx || {
+    echo "[!] Some pre-compiled packages were not in pkg repo; installing base packages..."
+    pkg install -y python python-pip git rust clang binutils libxml2 libxslt libffi openssl sqlite android-tools make pkg-config
+}
 
 # 3. Optimize ADB daemon & connect to target device
 PROJECT_DIR="${HOME}/flash-hunter"
@@ -51,21 +59,24 @@ PROJECT_DIR="$HOME/flash-hunter"
 mkdir -p "$PROJECT_DIR"
 cd "$PROJECT_DIR"
 
+# Re-create virtual environment with system site packages to leverage native Termux wheels
 if [ ! -d ".venv" ]; then
-    echo "[+] Creating dedicated target ARM64 virtual environment..."
-    python -m venv .venv
+    echo "[+] Creating dedicated target virtual environment with system site packages..."
+    python -m venv --system-site-packages .venv
 fi
 
 # Activate venv
 source .venv/bin/activate
-pip install --upgrade pip setuptools wheel
+pip install --upgrade pip setuptools wheel maturin
 
-# Install dependencies (will build native C-extensions or use pure python fallbacks)
+export ANDROID_API_LEVEL=24
+
+# Install dependencies
 if [ -f "requirements.txt" ]; then
-    echo "[+] Installing requirements on ARM64..."
-    pip install -r requirements.txt || {
-        echo "[!] Standard install had failures; installing with fallback resilience..."
-        pip install --no-build-isolation -r requirements.txt
+    echo "[+] Installing remaining requirements in virtual environment..."
+    pip install --prefer-binary -r requirements.txt || {
+        echo "[!] Standard install had failures; installing with --no-build-isolation..."
+        pip install --no-build-isolation --prefer-binary -r requirements.txt
     }
 fi
 
