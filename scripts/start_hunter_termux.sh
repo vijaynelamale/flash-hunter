@@ -26,7 +26,7 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting Flash-Hunter Watchdog Supervisor..
 while true; do
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Launching Flash-Hunter Core Process..." | tee -a "${LOG_FILE}"
     
-    python -u src/main.py >> "${LOG_FILE}" 2>&1 &
+    "${PROJECT_DIR}/.venv/bin/python" -u src/main.py >> "${LOG_FILE}" 2>&1 &
     HUNTER_PID=$!
     
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Flash-Hunter started with PID: ${HUNTER_PID}" | tee -a "${LOG_FILE}"
