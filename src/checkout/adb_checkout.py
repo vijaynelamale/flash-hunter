@@ -113,12 +113,32 @@ class ADBCheckoutDriver(AbstractCheckoutDriver):
         intent_url = f"https://www.amazon.in/dp/{product.product_id}"
         d.shell(f"am start -a android.intent.action.VIEW -d '{intent_url}' -p {AMAZON_PKG}")
 
-        # Wait for Buy Now button to become clickable (timeout 4s)
+        # Wait for Buy Now button to become clickable (timeout 3s)
         buy_now_btn = d(textContains="Buy Now")
-        buy_now_btn.wait(timeout=4.0)
+        buy_now_btn.wait(timeout=3.0)
         if not buy_now_btn.exists:
             buy_now_btn = d(resourceIdMatches=r".*buyNow.*")
-            buy_now_btn.wait(timeout=2.0)
+            buy_now_btn.wait(timeout=1.5)
+
+        # Fallback: If deep link didn't load the product page directly, search ASIN via Search Bar
+        if not buy_now_btn.exists:
+            logger.info("[ADB Amazon] Deep link not landed on product page; trying high-speed ASIN search fallback...")
+            search_box = d(resourceIdMatches=r".*(rs_search_src_text|chrome_search_hint_src|search_src_text).*")
+            if not search_box.exists:
+                search_box = d(textContains="Search")
+
+            if search_box.exists:
+                search_box.click()
+                d.send_keys(product.product_id)
+                d.press("enter")
+
+                # Wait for search results and tap top product
+                first_result = d(resourceIdMatches=r".*(item_title|product_title|item_image).*")
+                first_result.wait(timeout=3.0)
+                if first_result.exists:
+                    first_result.click()
+                    buy_now_btn = d(textContains="Buy Now")
+                    buy_now_btn.wait(timeout=3.0)
 
         if not buy_now_btn.exists:
             d.press("home")
