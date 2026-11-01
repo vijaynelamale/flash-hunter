@@ -20,16 +20,19 @@ fi
 echo "[+] Updating pkg repositories..."
 pkg update -y && pkg upgrade -y
 
-# Detect Android API level and export for Rust/maturin builds
+# Detect Android API level and export resource-friendly compiler flags for 2GB RAM ARM
 export ANDROID_API_LEVEL="${ANDROID_API_LEVEL:-24}"
-export CARGO_BUILD_TARGET_DIR="${PROJECT_DIR:-$HOME/flash-hunter}/.cargo_target"
+export CARGO_BUILD_JOBS=1
+export RUSTFLAGS="-C opt-level=1 -C debuginfo=0"
 
-echo "[+] Installing core build tools and pre-compiled Termux Python wheels..."
+# Clean up old build caches to free storage on eMMC
+echo "[+] Cleaning temporary caches to preserve disk space..."
+rm -rf "$HOME/.cargo_target" "$HOME/flash-hunter/.cargo_target" "$HOME/.cache/pip/wheels" 2>/dev/null || true
+pkg clean || true
+
+echo "[+] Installing build headers and image libraries for Pillow & Cryptography..."
 pkg install -y python python-pip git rust clang binutils libxml2 libxslt libffi openssl sqlite android-tools make pkg-config \
-    python-pydantic python-pydantic-core python-pydantic-settings python-cryptography python-lxml python-pillow python-yaml python-httpx || {
-    echo "[!] Some pre-compiled packages were not in pkg repo; installing base packages..."
-    pkg install -y python python-pip git rust clang binutils libxml2 libxslt libffi openssl sqlite android-tools make pkg-config
-}
+    libjpeg-turbo libpng freetype libwebp openjpeg
 
 # 3. Optimize ADB daemon & connect to target device
 PROJECT_DIR="${HOME}/flash-hunter"
@@ -67,16 +70,16 @@ fi
 
 # Activate venv
 source .venv/bin/activate
-pip install --upgrade pip setuptools wheel maturin
+pip install --upgrade pip setuptools wheel maturin pybind11
 
 export ANDROID_API_LEVEL=24
 
 # Install dependencies
 if [ -f "requirements.txt" ]; then
-    echo "[+] Installing remaining requirements in virtual environment..."
+    echo "[+] Installing requirements in virtual environment..."
     pip install --prefer-binary -r requirements.txt || {
-        echo "[!] Standard install had failures; installing with --no-build-isolation..."
-        pip install --no-build-isolation --prefer-binary -r requirements.txt
+        echo "[!] Fallback install with single job..."
+        pip install --no-build-isolation -r requirements.txt
     }
 fi
 
