@@ -21,7 +21,7 @@ echo "[+] Updating pkg repositories..."
 pkg update -y && pkg upgrade -y
 
 echo "[+] Installing core build tools and dependencies..."
-pkg install -y python git rust clang binutils libxml2 libxslt libffi openssl sqlite libsqlite adb
+pkg install -y python git rust clang binutils libxml2 libxslt libffi openssl sqlite android-tools
 
 # 3. Optimize ADB daemon on-board
 echo "[+] Initializing local ADB daemon..."
