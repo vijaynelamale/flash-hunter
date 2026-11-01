@@ -93,10 +93,20 @@ class CategoryPoller:
                 canonical = f"https://www.amazon.in/dp/{asin}"
                 extracted.add(canonical)
         elif platform == "flipkart":
-            matches = FLIPKART_PRODUCT_HREF_REGEX.findall(html)
-            for itm_id in set(matches):
-                canonical = f"https://www.flipkart.com/p/{itm_id}"
-                extracted.add(canonical)
+            # Match full product path including slug: /slug-name/p/itm...
+            full_matches = re.findall(r'href=["\'](/[^"\'\s]+/p/itm[a-zA-Z0-9]+[^"\'\s]*)["\']', html)
+            for path in set(full_matches):
+                # Clean tracking params except pid
+                clean_path = path.split("&lid=")[0].split("&marketplace=")[0]
+                full_url = urljoin("https://www.flipkart.com", clean_path)
+                extracted.add(full_url)
+
+            # Fallback if slug wasn't in href
+            if not full_matches:
+                matches = FLIPKART_PRODUCT_HREF_REGEX.findall(html)
+                for itm_id in set(matches):
+                    canonical = f"https://www.flipkart.com/product/p/{itm_id}"
+                    extracted.add(canonical)
 
         return list(extracted)
 
