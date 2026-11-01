@@ -23,17 +23,28 @@ pkg update -y && pkg upgrade -y
 echo "[+] Installing core build tools and dependencies..."
 pkg install -y python git rust clang binutils libxml2 libxslt libffi openssl sqlite android-tools
 
-# 3. Optimize ADB daemon on-board
-echo "[+] Initializing local ADB daemon..."
-adb kill-server || true
-adb start-server || true
-adb connect 127.0.0.1:5555 || true
+# 3. Optimize ADB daemon & connect to target device
+PROJECT_DIR="${HOME}/flash-hunter"
+TARGET_ADB="${1:-${ADB_TARGET:-}}"
 
-# 4. Disable Battery Optimization (Doze Mode) for Termux and Shopping Apps via local ADB
-echo "[+] Disabling Android Doze battery optimizations..."
-adb shell dumpsys deviceidle whitelist +com.termux || true
-adb shell dumpsys deviceidle whitelist +in.amazon.mShop.android.shopping || true
-adb shell dumpsys deviceidle whitelist +com.flipkart.android || true
+# Check if ADB_TARGET is in .env
+if [ -z "${TARGET_ADB}" ] && [ -f "${PROJECT_DIR}/.env" ]; then
+    TARGET_ADB=$(grep -E '^ADB_TARGET=' "${PROJECT_DIR}/.env" | cut -d '=' -f2- | tr -d '"' | tr -d "'" | tr -d ' ' || true)
+fi
+
+# Fallback default
+TARGET_ADB="${TARGET_ADB:-10.42.0.90:5555}"
+echo "[+] Target ADB Device: ${TARGET_ADB}"
+
+echo "[+] Initializing ADB daemon and connecting to ${TARGET_ADB}..."
+adb start-server || true
+adb connect "${TARGET_ADB}" || true
+
+# 4. Disable Battery Optimization (Doze Mode) for Termux and Shopping Apps on target device
+echo "[+] Disabling Android Doze battery optimizations on device ${TARGET_ADB}..."
+adb -s "${TARGET_ADB}" shell dumpsys deviceidle whitelist +com.termux || true
+adb -s "${TARGET_ADB}" shell dumpsys deviceidle whitelist +in.amazon.mShop.android.shopping || true
+adb -s "${TARGET_ADB}" shell dumpsys deviceidle whitelist +com.flipkart.android || true
 
 # 5. Create Python Virtual Environment on Target
 PROJECT_DIR="$HOME/flash-hunter"
