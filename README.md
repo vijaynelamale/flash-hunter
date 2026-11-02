@@ -19,7 +19,7 @@ Engineered for **cross-platform development** on Host Dev Workstations and deplo
   - Sub-millisecond DOM parsing via `selectolax` (with `BeautifulSoup4` + `lxml` fallback).
 - **Sub-Millisecond Fast Rule Engine:**
   - Evaluates user expectations (`natural_language_spec`), price caps, discount percentages, and negative keywords (blocking accessories/traps).
-  - Global `crazy_deal_override` (e.g., >=90% discount under ₹1,000 across all streams).
+  - Global `crazy_deal_override` (e.g., >=90% discount under ₹10,000 across all streams).
 - **Cloud LLM Verification:**
   - `gemini-2.5-flash` with strict Pydantic Structured Outputs.
   - Automatic fallback to Groq `llama-3.3-70b-versatile` and offline heuristics.
@@ -34,17 +34,136 @@ Engineered for **cross-platform development** on Host Dev Workstations and deplo
 
 ---
 
+## Active Category Filters & Budget Constraints
+
+Categories are declaratively configured in [`config/targets.yaml`](config/targets.yaml:1) and validated via fast sub-millisecond filtering and cloud LLM verification:
+
+| Category ID | Target Name | Budget Cap (INR) | Min Discount | Key Exclusions / Negative Keywords |
+| :--- | :--- | :--- | :--- | :--- |
+| `high_end_laptops` | High-End Laptops (Gaming/Ultrabook) | **₹10,000.00** | 50.0% | Celeron, Pentium, Athlon, Chromebook, eMMC, dual-core, skins, cooling pads, laptop bags, spares |
+| `pc_components` | PC Components (GPU, CPU, NVMe, RAM) | **₹15,000.00** | 35.0% | Thermal paste, cables, fan splitters, brackets, prebuilts, heatsink-only, empty boxes |
+| `large_home_appliances` | Large Appliances (AC, Fridge, TV, Washing Machine) | **₹5,000.00** | 60.0% | Covers, stands, trolleys, inlet pipes, stabilizers, remotes, descaling powder, filters |
+| `flagship_smartphone` | Flagship / Upper Mid Smartphone | **₹25,000.00** | 30.0% | Covers, cases, tempered glass, skins, cables, adapters, dummy units, renewed |
+| `tws_anc_earbuds` | TWS Earbuds with ANC | **₹4,500.00** | 50.0% | Silicone cases, ear tips, straps, replacement single buds, charging cables |
+| `smartwatch_amoled` | AMOLED Smartwatch | **₹2,500.00** | 60.0% | Straps, bands, screen guards, bumpers, charging docks, bezel rings |
+| `mechanical_keyboard` | Mechanical Gaming Keyboard | **₹3,000.00** | 45.0% | Keycaps only, wrist rests, switch pullers, lube, switches only, desk mats, membrane |
+| *global_rules* | Crazy Deal Loot Override | **₹10,000.00** | 90.0% | Triggers instantly across all streams regardless of category for 90%+ discount items |
+
+---
+
+## Android TV WebView Limitations & 2-Tier Navigation Strategy
+
+### Root Cause of Android TV Deep Link Failures
+On headless or leanback Android TV devices (such as Xiaomi Mi TV motherboards running Android TV 9/10/11), standard Android App Links (`https://www.amazon.in/dp/<ASIN>`) frequently fail domain verification or get hijacked by an outdated `com.google.android.webview` provider. When invoked via standard `android.intent.action.VIEW` intents, this can result in:
+1. Blank WebView rendering or infinite spinner.
+2. In-app browser redirects to login interstitials instead of native shopping screens.
+3. System `ResolverActivity` dialogs hanging automated headless execution.
+
+### Implemented 2-Tier Automated Fallback Navigation
+Implemented in [`src/checkout/adb_checkout.py`](src/checkout/adb_checkout.py:106):
+
+```mermaid
+flowchart TD
+    A[Trigger Auto-Checkout for ASIN/PID] --> B[Tier 1: Explicit Package Intent Dispatch]
+    B --> C{Buy Now Button Found within 3.0s?}
+    C -- Yes --> D[Proceed to Zero-OTP Payment & Price Guard]
+    C -- No --> E[Tier 2: In-App Search Bar Fallback]
+    E --> F[Locate Search Bar rs_search_src_text]
+    F --> G[Inject Exact Product ID / ASIN via send_keys]
+    G --> H[Press ENTER & Tap Top Search Result]
+    H --> I{Buy Now Button Available?}
+    I -- Yes --> D
+    I -- No --> J[Abort Checkout, Return Home & Log Failure]
+```
+
+1. **Tier 1 (Direct Deep Link Intent):**
+   Dispatches explicit component intent targeting the retailer package:
+   ```bash
+   adb shell am start -a android.intent.action.VIEW -d 'https://www.amazon.in/dp/<ASIN>' -p in.amazon.mShop.android.shopping
+   ```
+2. **Tier 2 (High-Speed In-App ASIN Search Fallback):**
+   If the "Buy Now" button is not clickable within 3.0 seconds, `ADBCheckoutDriver` automatically:
+   - Locates the in-app search input (`rs_search_src_text` or `chrome_search_hint_src`).
+   - Injects the exact ASIN via UIAutomator2 key events (`d.send_keys(product.product_id)`).
+   - Submits `ENTER` and clicks the first exact matched listing.
+
+---
+
+## Troubleshooting & ADB Diagnostics
+
+Use the following diagnostic commands from the host machine or local Termux shell to debug intent routing, WebView state, and background permissions:
+
+### 1. Verify Android System WebView Provider
+```bash
+adb shell dumpsys webviewupdate
+```
+*Look for `Current WebView package (name, version)` to ensure a valid WebView provider is active.*
+
+### 2. Verify Deep Link Intent Resolution
+Check which activity handles the Amazon or Flipkart product URL:
+```bash
+# Test Amazon ASIN intent resolution
+adb shell cmd package resolve-activity --brief -a android.intent.action.VIEW -d "https://www.amazon.in/dp/B0CQPLJPTM"
+
+# Test Flipkart PID intent resolution
+adb shell cmd package resolve-activity --brief -a android.intent.action.VIEW -d "https://www.flipkart.com/p/itm?pid=ACCLAPTOP123"
+```
+
+### 3. Check App Whitelisting & Doze State
+Ensure Termux and shopping applications bypass Android Doze mode:
+```bash
+adb shell dumpsys deviceidle whitelist | grep -E "termux|amazon|flipkart"
+```
+To manually whitelist if missing:
+```bash
+adb shell dumpsys deviceidle whitelist +com.termux
+adb shell dumpsys deviceidle whitelist +in.amazon.mShop.android.shopping
+adb shell dumpsys deviceidle whitelist +com.flipkart.android
+```
+
+### 4. Monitor Live UI Hierarchy During Checkout
+Dump the current foreground XML hierarchy to debug missing resource IDs:
+```bash
+adb shell uiautomator dump /data/local/tmp/uidump.xml && adb shell cat /data/local/tmp/uidump.xml
+```
+
+---
+
+## Termux Low-RAM ARM Deployment Checklist
+
+Follow this checklist when deploying to 2GB RAM ARM64/32-bit Android devices:
+
+- [ ] **Termux Architecture:** Verify userland architecture (`uname -m`). On 32-bit userlands, compilation flags must be clamped to single-core to avoid OOM killer during `pip install`:
+  ```bash
+  export ANDROID_API_LEVEL=24
+  export CARGO_BUILD_JOBS=1
+  export RUSTFLAGS="-C opt-level=1 -C debuginfo=0"
+  ```
+- [ ] **Wake-Lock:** Execute `termux-wake-lock` to ensure the CPU does not throttle when the TV display enters standby.
+- [ ] **System Dependencies:** Ensure required C libraries for Pillow, Cryptography, and SQLite are installed:
+  ```bash
+  pkg install -y python python-pip git rust clang binutils libxml2 libxslt libffi openssl sqlite android-tools make pkg-config libjpeg-turbo libpng freetype libwebp openjpeg
+  ```
+- [ ] **Target Virtualenv:** Initialize python environment using `--system-site-packages` to leverage precompiled Termux binaries.
+- [ ] **Memory Watchdog:** Confirm [`scripts/start_hunter_termux.sh`](scripts/start_hunter_termux.sh:1) is running with RSS ceiling set to `<190MB` (`MAX_RSS_KB=194560`).
+- [ ] **Configuration Check:** Verify [`config/settings.yaml`](config/settings.yaml:1) has `dry_run: true` until live test runs confirm stable execution.
+
+---
+
 ## Repository Structure
 
 ```text
 flash-hunter/
 ├── AGENTS.md                      # Target hardware constraints & guardrails
+├── PROJECT_CONTEXT.md             # Complete architectural context & state
 ├── README.md                      # Documentation & deployment guide
 ├── requirements.txt               # Pinned cross-platform dependencies
 ├── pytest.ini                     # Pytest runner configuration
+├── .context                       # Machine-readable project state JSON
 ├── .env.example                   # Environment configuration template
 ├── .stignore                      # Syncthing ignore patterns (.venv, *.db, cache)
 ├── config/
+│   ├── settings.yaml              # Global budget, notifications, & bot settings
 │   └── targets.yaml               # Target categories, NL specs & crazy deal rules
 ├── scripts/
 │   ├── bootstrap_termux_target.sh # Target Termux setup (run ONLY on Mi TV)
@@ -80,11 +199,12 @@ flash-hunter/
     ├── fixtures/
     │   ├── amazon_product_sample.html
     │   └── flipkart_product_sample.html
-    ├── test_rule_engine.py
-    ├── test_scraper_parsers.py
-    ├── test_llm_validator.py
     ├── test_adb_checkout_mocked.py
-    └── test_circuit_breaker.py
+    ├── test_circuit_breaker.py
+    ├── test_config_settings.py
+    ├── test_llm_validator.py
+    ├── test_rule_engine.py
+    └── test_scraper_parsers.py
 ```
 
 ---
@@ -106,7 +226,7 @@ cp .env.example .env
 
 ### 3. Run Unit Tests (100% Mocked / Offline)
 ```bash
-pytest -v
+./.venv/bin/pytest -v
 ```
 
 ---

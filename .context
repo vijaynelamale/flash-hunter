@@ -1,0 +1,157 @@
+{
+  "project_metadata": {
+    "name": "flash-hunter",
+    "version": "1.2.0",
+    "description": "Autonomous Flash-Sale Hunter & Auto-Checkout Assistant for Amazon India & Flipkart",
+    "deployment_target": "Xiaomi Mi TV Motherboard (Headless Android + Native Termux)",
+    "repository": "https://github.com/vijaynelamale/flash-hunter",
+    "supported_platforms": ["amazon.in", "flipkart.com"],
+    "last_updated": "2026-11-02T14:15:00Z",
+    "agent_version": "bob-agent-v2"
+  },
+  "hardware_profile": {
+    "device_name": "Xiaomi Mi TV Motherboard",
+    "soc": "Amlogic Quad-Core ARM Cortex-A53",
+    "kernel_architecture": "aarch64",
+    "userland_architecture": "armeabi-v7a (32-bit userland for memory optimization)",
+    "physical_ram_mb": 2048,
+    "max_rss_threshold_mb": 190.0,
+    "max_rss_threshold_kb": 194560,
+    "storage_type": "eMMC Flash",
+    "power_profile": "Android TV Leanback with Wake-Lock and Doze Whitelist",
+    "supervisor_script": "scripts/start_hunter_termux.sh"
+  },
+  "execution_topologies": {
+    "standalone": {
+      "mode": "STANDALONE",
+      "adb_target": "127.0.0.1:5555",
+      "description": "Python pipeline running directly inside Native Termux on Mi TV board"
+    },
+    "remote_lan": {
+      "mode": "REMOTE_LAN",
+      "adb_target": "10.42.0.90:5555",
+      "description": "Python pipeline running on Dev Host controlling Mi TV over LAN Wi-Fi ADB"
+    },
+    "mock_offline": {
+      "mode": "MOCK",
+      "dry_run": true,
+      "description": "100% offline mocked unit testing on Dev Host without hardware"
+    }
+  },
+  "budget_and_safety_controls": {
+    "global_budget_limit_inr": 10000.0,
+    "daily_spend_limit_inr": 10000.0,
+    "max_single_item_price_inr": 10000.0,
+    "post_order_kill_switch_count": 1,
+    "checkout_cooldown_seconds": 60,
+    "crazy_deal_override": {
+      "enabled": true,
+      "min_discount_percent": 90.0,
+      "max_price_inr": 10000.0
+    },
+    "telegram_notifications": {
+      "enabled": true,
+      "threshold_price_inr": 10000.0
+    }
+  },
+  "active_category_filters": [
+    {
+      "id": "high_end_laptops",
+      "name": "High-End Laptops (Gaming, Workstation, Ultrabook)",
+      "max_price_inr": 10000.0,
+      "min_discount_percent": 50.0,
+      "natural_language_spec": "Genuine premium high-performance laptops including gaming laptops (NVIDIA RTX 3060/4050/4060/4070/4080/4090 or AMD Radeon RX 6000/7000), mobile workstations, or premium ultrabooks (Intel Core i7/i9/Ultra 7/Ultra 9, AMD Ryzen 7/9/AI, Apple MacBook Air/Pro M1/M2/M3/M4 with at least 16GB RAM and 512GB/1TB NVMe SSD, OLED/IPS high-refresh displays) from tier-1 brands (Apple, ASUS ROG/TUF/Zephyrus/ZenBook, Lenovo Legion/LOQ/ThinkPad/Yoga, Dell XPS/Alienware/G-Series, HP Omen/Victus/Spectre/Envy, Acer Predator/Nitro/Swift, MSI).",
+      "negative_keywords_count": 41
+    },
+    {
+      "id": "pc_components",
+      "name": "PC Components (GPU, CPU, NVMe SSD, DDR4/DDR5 RAM, Motherboard)",
+      "max_price_inr": 15000.0,
+      "min_discount_percent": 35.0,
+      "natural_language_spec": "Genuine internal PC computer hardware components including: NVMe M.2 SSDs (>=1TB PCIe Gen4/Gen3), DDR4/DDR5 RAM kits (>=16GB/32GB), dedicated Graphics Cards (NVIDIA RTX or AMD Radeon), Desktop CPUs (Intel Core i5/i7/i9 or AMD Ryzen 5/7/9), or 80+ Gold/Bronze Power Supplies from reputed brands.",
+      "negative_keywords_count": 25
+    },
+    {
+      "id": "large_home_appliances",
+      "name": "Large Home Appliances (Washing Machine, Refrigerator, AC, Microwave, Smart TV)",
+      "max_price_inr": 5000.0,
+      "min_discount_percent": 60.0,
+      "natural_language_spec": "Genuine full-sized large major home appliances: Fully/Semi-Automatic Washing Machines (Front/Top Load), Frost-Free Single/Double Door Refrigerators, Split/Window Inverter Air Conditioners (1T/1.5T), Convection/Grill Microwave Ovens (>=20L), Dishwashers, or Smart LED/QLED Televisions (>=32 inch) from top manufacturers (LG, Samsung, Whirlpool, Bosch, IFB, Panasonic, Haier, Godrej, Voltas, Daikin, Sony, Mi).",
+      "negative_keywords_count": 24
+    },
+    {
+      "id": "flagship_smartphone",
+      "name": "Flagship / Upper Mid-Range Smartphone",
+      "max_price_inr": 25000.0,
+      "min_discount_percent": 30.0,
+      "natural_language_spec": "Genuine smartphone with at least 8GB RAM and 128GB/256GB storage, modern 5G processor (Snapdragon or Dimensity), AMOLED display, high brand reputation (OnePlus, Samsung, Xiaomi/Poco, iQOO, Apple, Google Pixel, Motorola).",
+      "negative_keywords_count": 20
+    },
+    {
+      "id": "tws_anc_earbuds",
+      "name": "TWS Earbuds with Active Noise Cancellation",
+      "max_price_inr": 4500.0,
+      "min_discount_percent": 50.0,
+      "natural_language_spec": "True Wireless Stereo (TWS) earbuds featuring genuine Active Noise Cancellation (ANC), LDAC/AAC codec support, and at least 24h battery life from reputed audio brands (Sony, OnePlus, Nothing, Realme, JBL, Samsung Galaxy Buds).",
+      "negative_keywords_count": 19
+    },
+    {
+      "id": "smartwatch_amoled",
+      "name": "AMOLED Smartwatch",
+      "max_price_inr": 2500.0,
+      "min_discount_percent": 60.0,
+      "natural_language_spec": "Smartwatch with AMOLED display, Bluetooth calling, heart rate & SpO2 sensors, IP68 water resistance from brands like Amazfit, OnePlus, Noise, Fire-Boltt, or Samsung.",
+      "negative_keywords_count": 16
+    },
+    {
+      "id": "mechanical_keyboard",
+      "name": "Mechanical Gaming Keyboard",
+      "max_price_inr": 3000.0,
+      "min_discount_percent": 45.0,
+      "natural_language_spec": "Hot-swappable or genuine mechanical switch keyboard (Red/Brown/Blue switches), RGB or white backlighting, Tenkeyless (TKL) or 75% or full-size layout from Keychron, Royal Kludge, Cosmic Byte, Redragon, Razer, Logitech.",
+      "negative_keywords_count": 15
+    }
+  ],
+  "known_limitations_and_workarounds": [
+    {
+      "limitation_id": "LIM-001",
+      "title": "Android TV WebView App Link Domain Verification Failure",
+      "description": "Direct deep link intents for amazon.in/dp/ fail on Android TV due to missing custom tabs / domain verification in Leanback OS.",
+      "workaround": "2-Tier Navigation Strategy in ADBCheckoutDriver: attempts direct intent, and if Buy Now is not present in 3s, enters ASIN in in-app search bar (rs_search_src_text).",
+      "reference_file": "src/checkout/adb_checkout.py",
+      "reference_line": 124
+    },
+    {
+      "limitation_id": "LIM-002",
+      "title": "Android FLAG_SECURE on NPCI UPI Payment Screens",
+      "description": "UPI PIN keypad screens block UIAutomator2 inspection and tap injection via OS-level security flags.",
+      "workaround": "Strictly restricted to Zero-OTP payment methods: Amazon Pay Balance, Flipkart Gift Card / Wallet Balance, and COD.",
+      "reference_file": "src/checkout/adb_checkout.py",
+      "reference_line": 158
+    },
+    {
+      "limitation_id": "LIM-003",
+      "title": "Mid-Checkout Flash Sale Price Surges",
+      "description": "Lightning deals or flash coupons expiring between ingestion and final order placement causing checkout price jumps.",
+      "workaround": "Mandatory final UI XML hierarchy price extraction before clicking Place Order; triggers PRICE_JUMP_ABORT and returns to home screen if price exceeds authorized limit.",
+      "reference_file": "src/checkout/adb_checkout.py",
+      "reference_line": 180
+    },
+    {
+      "limitation_id": "LIM-004",
+      "title": "Termux 2GB RAM Compilation OOM",
+      "description": "Building native Python C-extensions/Rust wheels exhausts physical memory on Mi TV.",
+      "workaround": "Set CARGO_BUILD_JOBS=1, RUSTFLAGS='-C opt-level=1 -C debuginfo=0', and install prebuilt Termux C libraries.",
+      "reference_file": "scripts/bootstrap_termux_target.sh",
+      "reference_line": 24
+    }
+  ],
+  "configuration_registry": {
+    "settings_yaml": "config/settings.yaml",
+    "targets_yaml": "config/targets.yaml",
+    "env_example": ".env.example",
+    "agents_md": "AGENTS.md",
+    "project_context": "PROJECT_CONTEXT.md",
+    "state_db": "data/flash_hunter.db"
+  }
+}

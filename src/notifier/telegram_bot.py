@@ -20,17 +20,25 @@ class TelegramControlNotifier:
         chat_id: Optional[int],
         circuit_breaker: Optional[CircuitBreaker] = None,
         manual_buy_callback: Optional[Callable] = None,
+        enabled: bool = True,
+        threshold_price_inr: float = 10000.0,
     ):
         self.bot_token = bot_token
         self.chat_id = chat_id
         self.circuit_breaker = circuit_breaker
         self.manual_buy_callback = manual_buy_callback
+        self.enabled = enabled
+        self.threshold_price_inr = threshold_price_inr
         self.base_url = f"https://api.telegram.org/bot{self.bot_token}" if self.bot_token else ""
         self._is_polling = False
         self._last_update_id = 0
 
     async def send_message(self, text: str, reply_markup: Optional[Dict] = None) -> bool:
         """Transmits Markdown message to operator Telegram chat."""
+        if not self.enabled:
+            logger.debug("[TELEGRAM NOTIFIER (DISABLED)]:\n%s", text)
+            return False
+
         if not self.bot_token or not self.chat_id:
             logger.debug("[TELEGRAM NOTIFIER (MOCKED)]:\n%s", text)
             return True
@@ -59,7 +67,15 @@ class TelegramControlNotifier:
         verification: DealVerificationResult,
         status_note: str = "AUTO-CHECKOUT TRIGGERED",
     ) -> bool:
-        """Sends rich product deal alert."""
+        """Sends rich product deal alert if within notification threshold."""
+        if product.current_price_inr > self.threshold_price_inr:
+            logger.info(
+                "Skipping deal alert: Price ₹%.2f exceeds notification threshold ₹%.2f",
+                product.current_price_inr,
+                self.threshold_price_inr,
+            )
+            return False
+
         text = (
             f"⚡ *FLASH SALE DETECTED* ⚡\n\n"
             f"🛒 *Product:* [{product.title[:100]}]({product.canonical_url})\n"
@@ -111,6 +127,9 @@ class TelegramControlNotifier:
         )
         return await self.send_message(text)
 
+    # Alias for compatibility
+    send_price_jump_alert = send_price_jump_abort
+
     async def send_circuit_breaker_alert(self, reason: str) -> bool:
         """Sends emergency circuit breaker alert."""
         text = f"🛑 *CIRCUIT BREAKER ALERT* 🛑\n\n⚠️ {reason}\nAutomated checkouts halted."
@@ -131,7 +150,8 @@ class TelegramControlNotifier:
                 f"• Operational State: `{status_str}`\n"
                 f"• Spent Today: `₹{today_spent:,.2f}` / `₹{self.circuit_breaker.daily_spend_limit_inr:,.2f}`\n"
                 f"• Orders Today: `{today_orders}` / `{self.circuit_breaker.post_order_kill_switch_count}`\n"
-                f"• Single Item Cap: `₹{self.circuit_breaker.max_single_item_price_inr:,.2f}`"
+                f"• Single Item Cap: `₹{self.circuit_breaker.max_single_item_price_inr:,.2f}`\n"
+                f"• Telegram Alerts: `{'ENABLED' if self.enabled else 'DISABLED'}` (Threshold: ₹{self.threshold_price_inr:,.2f})"
             )
 
         elif cmd == "/pause":
@@ -172,7 +192,7 @@ class TelegramControlNotifier:
 
     async def start_polling(self) -> None:
         """Lightweight command polling loop for 2-way interactive control."""
-        if not self.bot_token:
+        if not self.enabled or not self.bot_token:
             return
 
         self._is_polling = True

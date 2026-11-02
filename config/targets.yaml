@@ -5,8 +5,8 @@
 global_rules:
   crazy_deal_override:
     enabled: true
-    min_discount_percent: 99.0
-    max_price_inr: 1000.0
+    min_discount_percent: 90.0
+    max_price_inr: 10000.0
     description: "Instant trigger on any legitimate high-discount loot across all monitored streams regardless of category"
 
 targets:
@@ -22,6 +22,13 @@ targets:
       - "tempered glass"
       - "skin"
       - "camera lens protector"
+      - "laptop"
+      - "notebook"
+      - "macbook"
+      - "tv"
+      - "television"
+      - "refrigerator"
+      - "washing machine"
       - "refurbished"
       - "renewed"
       - "dummy"
@@ -43,6 +50,16 @@ targets:
     max_price_inr: 500.0
     min_discount_percent: 50.0
     negative_keywords:
+      - "laptop"
+      - "stand"
+      - "cooling pad"
+      - "keyboard"
+      - "mouse"
+      - "smartwatch"
+      - "watch"
+      - "smartphone"
+      - "phone"
+      - "mobile"
       - "silicone case"
       - "ear tips"
       - "strap"
@@ -65,6 +82,15 @@ targets:
     max_price_inr: 500.0
     min_discount_percent: 60.0
     negative_keywords:
+      - "laptop"
+      - "stand"
+      - "cooling pad"
+      - "keyboard"
+      - "mouse"
+      - "earbuds"
+      - "headphone"
+      - "smartphone"
+      - "phone"
       - "strap"
       - "band"
       - "screen guard"
@@ -85,6 +111,13 @@ targets:
     max_price_inr: 1000.0
     min_discount_percent: 50.0
     negative_keywords:
+      - "laptop"
+      - "cooling pad"
+      - "stand"
+      - "earbuds"
+      - "smartwatch"
+      - "smartphone"
+      - "phone"
       - "keycaps"
       - "wrist rest"
       - "switch puller"
@@ -105,6 +138,15 @@ targets:
     max_price_inr: 1000.0
     min_discount_percent: 85.0
     negative_keywords:
+      - "laptop"
+      - "notebook"
+      - "macbook"
+      - "desktop"
+      - "prebuilt"
+      - "smartphone"
+      - "phone"
+      - "mobile"
+      - "tablet"
       - "thermal paste"
       - "thermal pad"
       - "screws"
@@ -177,3 +219,69 @@ targets:
         - "https://www.flipkart.com/air-conditioners/pr?sid=j9e,abm,c54"
         - "https://www.flipkart.com/microwave-ovens/pr?sid=j9e,m38,osn"
         - "https://www.flipkart.com/televisions/pr?sid=ckf,czl"
+
+  - id: "high_end_laptops"
+    name: "High-End Laptops (Gaming, Workstation, Ultrabook)"
+    natural_language_spec: "Genuine premium high-performance laptops including gaming laptops (NVIDIA RTX 3060/4050/4060/4070/4080/4090 or AMD Radeon RX 6000/7000), mobile workstations, or premium ultrabooks (Intel Core i7/i9/Ultra 7/Ultra 9, AMD Ryzen 7/9/AI, Apple MacBook Air/Pro M1/M2/M3/M4 with at least 16GB RAM and 512GB/1TB NVMe SSD, OLED/IPS high-refresh displays) from tier-1 brands (Apple, ASUS ROG/TUF/Zephyrus/ZenBook, Lenovo Legion/LOQ/ThinkPad/Yoga, Dell XPS/Alienware/G-Series, HP Omen/Victus/Spectre/Envy, Acer Predator/Nitro/Swift, MSI)."
+    max_price_inr: 10000.0
+    min_discount_percent: 50.0
+    negative_keywords:
+      - "celeron"
+      - "pentium"
+      - "athlon"
+      - "chromebook"
+      - "emmc"
+      - "dual core"
+      - "atom"
+      - "smartphone"
+      - "phone"
+      - "mobile"
+      - "tablet"
+      - "ipad"
+      - "skin"
+      - "cover"
+      - "sleeve"
+      - "bag"
+      - "backpack"
+      - "charger"
+      - "adapter"
+      - "power brick"
+      - "cable"
+      - "stand"
+      - "cooling pad"
+      - "cooler"
+      - "keyboard cover"
+      - "screen guard"
+      - "screen protector"
+      - "tempered glass"
+      - "dock"
+      - "docking station"
+      - "hub"
+      - "mouse pad"
+      - "mousepad"
+      - "dummy"
+      - "toy"
+      - "refurbished"
+      - "renewed"
+      - "box only"
+      - "empty box"
+      - "spare part"
+      - "motherboard only"
+      - "screen only"
+      - "display panel only"
+      - "battery only"
+      - "replacement battery"
+      - "keyboard only"
+      - "palmrest"
+      - "hinge"
+      - "body housing"
+    category_poll_urls:
+      amazon:
+        - "https://www.amazon.in/s?k=gaming+laptop&rh=p_n_deal_type%3A26922981031"
+        - "https://www.amazon.in/s?k=rtx+laptop&rh=p_n_deal_type%3A26922981031"
+        - "https://www.amazon.in/s?k=macbook&rh=p_n_deal_type%3A26922981031"
+        - "https://www.amazon.in/s?k=intel+core+i7+laptop&rh=p_n_deal_type%3A26922981031"
+      flipkart:
+        - "https://www.flipkart.com/laptops/gaming-laptops/pr?sid=6bo,b5g"
+        - "https://www.flipkart.com/laptops/pr?sid=6bo,b5g&p[]=facets.discount_range_v1%255B%255D%3D30%2525%2Bor%2Bmore"
+        - "https://www.flipkart.com/laptops/pr?sid=6bo,b5g&p[]=facets.processor%255B%255D%3DCore%2Bi7"

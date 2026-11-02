@@ -1,0 +1,41 @@
+# ==============================================================================
+# Flash-Hunter Global Settings & Notifications Configuration
+# ==============================================================================
+
+bot:
+  execution_mode: "STANDALONE"     # STANDALONE (Termux), REMOTE_LAN, or MOCK
+  dry_run: true                    # Set to true for safe simulation; false for live purchasing
+  log_level: "INFO"
+  adb_target: "10.42.0.90:5555"
+  checkout_driver: "adb"           # adb, webhook, or mock
+  preferred_payment_method: "AMAZON_PAY_BALANCE"  # AMAZON_PAY_BALANCE, FLIPKART_GIFT_CARD, COD
+
+budget:
+  global_budget_limit: 10000.0     # Global expenditure ceiling (INR)
+  daily_spend_limit_inr: 10000.0   # Daily spend limit (INR)
+  max_single_item_price_inr: 10000.0 # Maximum allowed price for an individual item (INR)
+  post_order_kill_switch_count: 1  # Orders to place before auto-locking circuit breaker
+  checkout_cooldown_seconds: 60    # Cooldown seconds between successive checkouts
+
+crazy_deal:
+  enabled: true
+  min_discount_percent: 90.0
+  max_price_inr: 10000.0           # Loot trigger price cap (INR)
+
+notifications:
+  telegram:
+    enabled: true                  # Master switch for Telegram alerts & remote control
+    threshold_price_inr: 10000.0   # Max price threshold for deal alerts (aligned with global budget limit)
+    bot_token: ""                  # Set via TELEGRAM_BOT_TOKEN environment variable or here
+    chat_id: null                  # Set via TELEGRAM_CHAT_ID environment variable or here
+    api_id: null                   # Set via TELEGRAM_API_ID environment variable or here
+    api_hash: ""                   # Set via TELEGRAM_API_HASH environment variable or here
+    channels: "@deals_india,@looter_deals,@flipkart_amazon_loots"
+
+database:
+  path: "data/flash_hunter.db"
+
+intelligence:
+  gemini_api_key: ""
+  groq_api_key: ""
+  llm_confidence_threshold: 0.85

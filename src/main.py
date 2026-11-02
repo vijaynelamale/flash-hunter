@@ -71,6 +71,8 @@ class FlashHunterOrchestrator:
             bot_token=self.settings.TELEGRAM_BOT_TOKEN,
             chat_id=self.settings.TELEGRAM_CHAT_ID,
             circuit_breaker=self.circuit_breaker,
+            enabled=self.settings.TELEGRAM_ENABLED,
+            threshold_price_inr=self.settings.TELEGRAM_NOTIFICATION_THRESHOLD_INR,
         )
 
         # Checkout driver initialization
@@ -124,7 +126,14 @@ class FlashHunterOrchestrator:
 
     async def start(self) -> None:
         """Starts all pipeline background tasks and worker pool."""
-        logger.info("Starting Flash-Hunter System in %s mode...", self.settings.EXECUTION_MODE.value)
+        logger.info(
+            "Starting Flash-Hunter System in %s mode (DRY_RUN=%s, Global Budget=₹%.2f)...",
+            self.settings.EXECUTION_MODE.value,
+            self.settings.DRY_RUN,
+            self.settings.GLOBAL_BUDGET_LIMIT,
+        )
+        if self.settings.DRY_RUN:
+            logger.info("🛡️ DRY RUN ACTIVE: No live orders will be executed. Live updates and deal streams will be safely monitored.")
         await self.state_store.connect()
         self.running = True
 
